@@ -12,7 +12,8 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)Build.props" Condition="Exists('$(SolutionDir)Build.props')" />
+  <Import Project="$(SolutionDir)build_default.props" />
+  <Import Project="$(SolutionDir)build.props" Condition="Exists('$(SolutionDir)build.props')" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -33,6 +34,7 @@
     <Compile Include="counters\SimpleStatsCounter.cs" />
   </ItemGroup>
   <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

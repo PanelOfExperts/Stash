@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stash.Test", "Tests.Stash\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stash", "Stash\Stash.csproj", "{36D99553-643D-4293-A87D-03C0ED14BB79}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{DFCE12C9-1E4C-4190-9377-9FBBB2575689}"
+	ProjectSection(SolutionItems) = preProject
+		build_default.props = build_default.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
