@@ -1,0 +1,9 @@
+C:\Development\Stash\Source\Tests.Stash\bin\Debug\Tests.Stash.dll
+C:\Development\Stash\Source\Tests.Stash\bin\Debug\Tests.Stash.pdb
+C:\Development\Stash\Source\Tests.Stash\bin\Debug\nunit.framework.dll
+C:\Development\Stash\Source\Tests.Stash\bin\Debug\Stash.dll
+C:\Development\Stash\Source\Tests.Stash\bin\Debug\Stash.pdb
+C:\Development\Stash\Source\Tests.Stash\bin\Debug\nunit.framework.xml
+C:\Development\Stash\Source\Tests.Stash\obj\Debug\Tests.Stash.csprojResolveAssemblyReference.cache
+C:\Development\Stash\Source\Tests.Stash\obj\Debug\Tests.Stash.dll
+C:\Development\Stash\Source\Tests.Stash\obj\Debug\Tests.Stash.pdb
