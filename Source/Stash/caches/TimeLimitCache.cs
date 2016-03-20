@@ -17,44 +17,40 @@ namespace Stash.caches
             _timeout = timeout;
         }
 
-        public override TValue GetIfPresent(TKey key)
+        private TValue GetWithBusinessRules(TKey key, Func<TValue> loader = null)
         {
-            Preconditions.CheckNotNull(key);
             Ticket ticket;
             var foundIt = _cache.TryGetValue(key, out ticket);
-            if (!foundIt)
-            {
-                StatsCounter.RecordMisses(1);
-                return default(TValue);
-            }
-            if (!ticket.IsExpired)
+            if (foundIt && !ticket.IsExpired)
             {
                 StatsCounter.RecordHits(1);
                 return ticket.Value;
             }
 
-            // Expired, so invalidate.
+            if (foundIt)
+            {
+                // It's expired, so evict it.
+                StatsCounter.RecordEviction();
+                Invalidate(key);
+            }
+
             StatsCounter.RecordMisses(1);
-            Invalidate(key);
-            return default(TValue);
+            if (loader == null) return default(TValue);
+
+            ticket = ResetTicket(key, loader);
+            return ticket.Value;
+        }
+
+        public override TValue GetIfPresent(TKey key)
+        {
+            Preconditions.CheckNotNull(key);
+            return GetWithBusinessRules(key);
         }
 
         public override TValue Get(TKey key, Func<TValue> loader)
         {
             Preconditions.CheckNotNull(key);
-            Ticket ticket;
-
-            var found = _cache.TryGetValue(key, out ticket);
-            if (!found || ticket.IsExpired)
-            {
-                StatsCounter.RecordMisses(1);
-                ticket = ResetTicket(key, loader);
-            }
-            else
-            {
-                StatsCounter.RecordHits(1);
-            }
-            return ticket.Value;
+            return GetWithBusinessRules(key, loader);
         }
 
         public override IDictionary<TKey, TValue> GetAllPresent(IEnumerable<TKey> keys)
@@ -65,10 +61,8 @@ namespace Stash.caches
                 var value = GetIfPresent(key);
                 if (value == null)
                 {
-                    StatsCounter.RecordMisses(1);
                     continue;
                 }
-                StatsCounter.RecordHits(1);
                 result.Add(key, value);
             }
             return new ReadOnlyDictionary<TKey, TValue>(result);
@@ -99,7 +93,6 @@ namespace Stash.caches
         {
             Preconditions.CheckNotNull(key);
             _cache.Remove(key);
-            StatsCounter.RecordEviction();
         }
 
         public override void InvalidateAll(IEnumerable<TKey> keys)
@@ -137,6 +130,7 @@ namespace Stash.caches
         private Ticket ResetTicket(TKey key, Func<TValue> getter)
         {
             Preconditions.CheckNotNull(key);
+            StatsCounter.RecordMisses(1);
             var ticket = Ticket.GetInstance(getter(), _now(), _timeout);
             _cache[key] = ticket;
             return ticket;
