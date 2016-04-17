@@ -35,8 +35,11 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="NullCacheTests.cs" />
+    <Compile Include="fluent\GrammarTests.cs" />
+    <Compile Include="caches\NonExpiringCacheTests.cs" />
+    <Compile Include="caches\NullCacheTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="caches\ThreadSafeCacheWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stash\Stash.csproj">
