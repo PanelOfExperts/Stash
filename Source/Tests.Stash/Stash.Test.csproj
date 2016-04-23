@@ -35,6 +35,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="fluent\FluentExtensionTestObjects.cs" />
     <Compile Include="fluent\GrammarTests.cs" />
     <Compile Include="caches\NonExpiringCacheTests.cs" />
     <Compile Include="caches\NullCacheTests.cs" />

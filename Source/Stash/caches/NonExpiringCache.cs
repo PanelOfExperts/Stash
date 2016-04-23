@@ -33,7 +33,7 @@ namespace Stash.caches
                 catch (InvalidCastException)
                 {
                     var message = string.Format(
-                        Strings.EXCEPTION_StoredValueCannotBeConverted, temp, typeof(TValue));
+                        Strings.EXCEPTION_StoredValueCannotBeConverted, temp, typeof (TValue));
                     throw new ArgumentException(message);
                 }
             }

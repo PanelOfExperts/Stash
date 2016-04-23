@@ -1,24 +1,31 @@
-﻿using Stash.caches;
-
-namespace Stash.fluent
+﻿namespace Stash.fluent
 {
     public static class Grammar
     {
         /// <summary>
-        ///     no op.  Linguistic pass-through.
+        ///     Creates a CacheObject for the given cache, enabling fluent extension.
         /// </summary>
-        public static ICache WhichIs(this ICache cache)
+        public static CacheObject Which(this ICache cacheToModify)
         {
-            return cache;
+            return new CacheObject(cacheToModify);
         }
 
         /// <summary>
-        ///     Makes the ICache thread-safe.
+        ///     Creates a CacheObject for the given cache, enabling fluent extension.
         /// </summary>
-        public static ICache ThreadSafe(this ICache cache)
+        public static CacheObject And(this ICache cacheToModify)
         {
-            return new ThreadSafeCacheWrapper(cache);
+            return new CacheObject(cacheToModify);
+        }
+    }
+
+    public class CacheObject
+    {
+        public CacheObject(ICache cacheToModify)
+        {
+            Cache = cacheToModify;
         }
 
+        public ICache Cache { get; }
     }
 }

@@ -12,7 +12,7 @@ namespace Stash
 
         public ICache GetNonExpiringCache()
         {
-            return new NonExpiringCache().WhichIs().ThreadSafe();
+            return new NonExpiringCache().Which().IsThreadSafe();
         }
     }
 }

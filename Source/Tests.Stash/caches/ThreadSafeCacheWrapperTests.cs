@@ -11,7 +11,7 @@ namespace Stash.Test.caches
         [SetUp]
         public void Setup()
         {
-            _cache = new NonExpiringCache().WhichIs().ThreadSafe();
+            _cache = new NonExpiringCache().Which().IsThreadSafe();
         }
 
         private readonly object lockObject = new object();
