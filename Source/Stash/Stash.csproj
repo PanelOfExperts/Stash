@@ -21,10 +21,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheFactory.cs" />
+    <Compile Include="caches\NonExpiringCache.cs" />
+    <Compile Include="caches\RulesCache.cs" />
     <Compile Include="caches\ThreadSafeCacheWrapper.cs" />
+    <Compile Include="caches\Ticket.cs" />
     <Compile Include="fluent\FluentExtensions.cs" />
     <Compile Include="ICache.cs" />
-    <Compile Include="caches\NonExpiringCache.cs" />
     <Compile Include="caches\NullCache.cs" />
     <Compile Include="fluent\Grammar.cs" />
     <Compile Include="Properties\InternalsVisibleTo.cs" />
