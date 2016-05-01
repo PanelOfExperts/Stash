@@ -9,6 +9,14 @@
         {
             return new CacheObject(cacheToModify);
         }
+		
+		/// <summary>
+        ///     Creates a CacheObject for the given cache, enabling fluent extension.
+        /// </summary>
+        public static CacheObject With(this ICache cacheToModify)
+        {
+            return new CacheObject(cacheToModify);
+        }
 
         /// <summary>
         ///     Creates a CacheObject for the given cache, enabling fluent extension.
