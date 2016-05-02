@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Stash.caches;
 using Stash.fluent;
+using Stash.rules;
 
 namespace Stash.Test.caches
 {
@@ -11,10 +12,8 @@ namespace Stash.Test.caches
         [SetUp]
         public void Setup()
         {
-            _cache = new NonExpiringCache().Which().IsThreadSafe();
+            _cache = new Cache().Which().IsThreadSafe();
         }
-
-        private readonly object lockObject = new object();
 
         private ICache _cache;
 

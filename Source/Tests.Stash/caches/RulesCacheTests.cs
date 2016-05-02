@@ -34,7 +34,7 @@ namespace Stash.Test.caches
             _timeout = TimeSpan.FromMilliseconds(250);
             _evictionRule = (ticket) => DateTime.UtcNow > ticket.CreationDate + _timeout;
 
-            _cache = new RulesCache(_ticketBuilder, _evictionRule);
+            _cache = new Cache(_ticketBuilder, _evictionRule);
         }
 
         [Test]
@@ -160,7 +160,7 @@ namespace Stash.Test.caches
         [Test]
         public void Count_checksAndEvicts()
         {
-            //var cache = new RulesCache(_ticketBuilder, _evictionRule);
+            //var cache = new Cache(_ticketBuilder, _evictionRule);
             Assert.AreEqual(0, _cache.Count);
             _cache.Set(_key, _getter);
             Assert.AreEqual(1, _cache.Count);

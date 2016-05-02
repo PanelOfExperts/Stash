@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using Stash.caches;
 
 namespace Stash.Test.caches
 {
@@ -9,7 +10,7 @@ namespace Stash.Test.caches
         [SetUp]
         public void Setup()
         {
-            cache_ = new CacheFactory().GetNullCache();
+            cache_ = new NullCache();
         }
 
         private ICache cache_;

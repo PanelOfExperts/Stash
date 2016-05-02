@@ -4,6 +4,7 @@ namespace Stash.caches
 {
     public class Ticket
     {
+        //internal readonly Func<DateTime> Now = () => DateTime.UtcNow;
         private object _value;
 
         public Ticket()

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Stash.caches;
 using Stash.fluent;
+using Stash.rules;
 
 namespace Stash.Test.fluent
 {
@@ -10,7 +11,7 @@ namespace Stash.Test.fluent
         [Test]
         public void Test_Chaining()
         {
-            var cache = new NonExpiringCache()
+            var cache = new Cache()
                 .Which().IsThreadSafe()
                 .And().TastesLikeChicken();
             
@@ -20,7 +21,7 @@ namespace Stash.Test.fluent
         [Test]
         public void Test_ThreadSafe()
         {
-            var cache = new NonExpiringCache();
+            var cache = new Cache();
 
             var tsCache = cache.Which().IsThreadSafe();
 

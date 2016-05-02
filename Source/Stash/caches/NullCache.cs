@@ -9,7 +9,7 @@ namespace Stash.caches
             return getter();
         }
 
-        public void Set<TValue>(string key, TValue value)
+        public Ticket Set<TValue>(string key, TValue value)
         {
             throw new NotImplementedException();
         }

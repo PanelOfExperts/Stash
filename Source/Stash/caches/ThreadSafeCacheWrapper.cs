@@ -29,10 +29,10 @@ namespace Stash.caches
                 return _wrappedCache.Get(key, loader);
         }
 
-        public void Set<TValue>(string key, TValue value)
+        public Ticket Set<TValue>(string key, TValue value)
         {
             lock (_lockObject)
-                _wrappedCache.Set(key, value);
+                return _wrappedCache.Set(key, value);
         }
 
         public void Clear()

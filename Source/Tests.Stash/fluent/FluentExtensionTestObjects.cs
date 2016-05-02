@@ -1,4 +1,5 @@
 ﻿using System;
+using Stash.caches;
 using Stash.fluent;
 
 namespace Stash.Test.fluent
@@ -8,7 +9,7 @@ namespace Stash.Test.fluent
         /// <summary>
         ///     Wraps a cache in another class.
         /// </summary>
-        public static ICache TastesLikeChicken(this CacheObject target)
+        public static ICache TastesLikeChicken(this IPronounOrConjunction target)
         {
             return new ChickenCacheWrapper(target.Cache);
         }
@@ -41,10 +42,10 @@ namespace Stash.Test.fluent
                 return _wrappedCache.Get(key, loader);
         }
 
-        public void Set<TValue>(string key, TValue value)
+        public Ticket Set<TValue>(string key, TValue value)
         {
             lock (_lockObject)
-                _wrappedCache.Set(key, value);
+                return _wrappedCache.Set(key, value);
         }
 
         public void Clear()

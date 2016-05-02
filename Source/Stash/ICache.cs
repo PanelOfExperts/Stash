@@ -1,4 +1,5 @@
 using System;
+using Stash.caches;
 
 namespace Stash
 {
@@ -32,7 +33,7 @@ namespace Stash
         ///         create, cache and return" pattern.
         ///     </para>
         /// </summary>
-        void Set<TValue>(string key, TValue value);
+        Ticket Set<TValue>(string key, TValue value);
 
         /// <summary>
         ///     Removes all keys and values from this cache.
