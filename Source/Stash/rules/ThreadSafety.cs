@@ -1,7 +1,19 @@
 ﻿using System;
+using Stash.fluent;
 
-namespace Stash.caches
+namespace Stash.rules
 {
+    public static class ThreadSafety
+    {
+        /// <summary>
+        ///     Makes the ICache thread-safe.
+        /// </summary>
+        public static ICache IsThreadSafe(this IPronounOrConjunction target)
+        {
+            return new ThreadSafeCacheWrapper(target.Cache);
+        }
+    }
+
     internal class ThreadSafeCacheWrapper : ICache
     {
         private readonly object _lockObject = new object();
@@ -29,7 +41,7 @@ namespace Stash.caches
                 return _wrappedCache.Get(key, loader);
         }
 
-        public Ticket Set<TValue>(string key, TValue value)
+        public ICacheEntry Set<TValue>(string key, TValue value)
         {
             lock (_lockObject)
                 return _wrappedCache.Set(key, value);
