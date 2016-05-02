@@ -17,21 +17,7 @@
         {
             return new Pronoun(cacheToModify);
         }
-
-        /// <summary>
-        ///     Creates a Preposition for the given cache, enabling the user to
-        ///     modify properties of the object via fluent extension.
-        /// </summary>
-        /// <para>
-        ///     any member of a class of words found in many languages that are used before nouns, pronouns,
-        ///     or other substantives to form phrases functioning as modifiers of verbs, nouns, or adjectives,
-        ///     and that typically express a spatial, temporal, or other relationship, as in, on, by, to, since.
-        /// </para>
-        public static IPreposition With(this ICache cacheToModify)
-        {
-            return new Preposition(cacheToModify);
-        }
-
+        
         /// <summary>
         ///     Creates a Conjunction for the given cache, enabling the user to
         ///     chain phrases of fluent extension.
@@ -44,5 +30,19 @@
         {
             return new Conjunction(cacheToModify);
         }
+
+        ///// <summary>
+        /////     Creates a Preposition for the given cache, enabling the user to
+        /////     modify properties of the object via fluent extension.
+        ///// </summary>
+        ///// <para>
+        /////     any member of a class of words found in many languages that are used before nouns, pronouns,
+        /////     or other substantives to form phrases functioning as modifiers of verbs, nouns, or adjectives,
+        /////     and that typically express a spatial, temporal, or other relationship, as in, on, by, to, since.
+        ///// </para>
+        //public static IPreposition With(this ICache cacheToModify)
+        //{
+        //    return new Preposition(cacheToModify);
+        //}
     }
 }

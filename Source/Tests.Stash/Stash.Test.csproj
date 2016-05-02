@@ -36,6 +36,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="caches\RulesCacheTests.cs" />
+    <Compile Include="caches\TicketTests.cs" />
     <Compile Include="fluent\FluentExtensionTestObjects.cs" />
     <Compile Include="fluent\GrammarTests.cs" />
     <Compile Include="rules\MixedExpirationTests.cs" />

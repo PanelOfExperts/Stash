@@ -33,7 +33,7 @@ namespace Stash
         ///         create, cache and return" pattern.
         ///     </para>
         /// </summary>
-        Ticket Set<TValue>(string key, TValue value);
+        ICacheEntry Set<TValue>(string key, TValue value);
 
         /// <summary>
         ///     Removes all keys and values from this cache.

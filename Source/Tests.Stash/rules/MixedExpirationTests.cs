@@ -11,6 +11,18 @@ namespace Stash.Test.rules
     [TestFixture]
     internal class MixedExpirationTests
     {
+        private int _ms;
+        private TimeSpan _timeout;
+        private DateTime _start;
+
+        [SetUp]
+        public void Setup()
+        {
+            _ms = new Random().Next(50, 100);
+            _timeout = TimeSpan.FromMilliseconds(_ms);
+            _start = DateTime.UtcNow;
+        }
+
         [Test]
         public void Construct_CacheWithBothExpirations()
         {
@@ -23,7 +35,7 @@ namespace Stash.Test.rules
             Assert.IsNotNull(cache);
             Assert.IsAssignableFrom<Cache>(cache);
 
-            Assert.AreEqual(timeSpan, cache.ExpirationRules.SlidingTimeSpan);
+            Assert.AreEqual(timeSpan, cache.ExpirationRules.SlidingExpiration);
             Assert.AreEqual(expiration, cache.ExpirationRules.AbsoluteExpiration);
         }
 
@@ -31,20 +43,18 @@ namespace Stash.Test.rules
         public void When_AbsoluteExpirationComesFirst_WhicheverIsSoonerEvictsCorrectly()
         {
             // Should expire after absolute expiration
-            //var counter = 0;
-            var ms = new Random().Next(50, 100);
-            Trace.WriteLine($"ms: {ms}");
-            var absolute = DateTime.UtcNow + TimeSpan.FromMilliseconds(ms);
-            var timeout = TimeSpan.FromSeconds(ms + 2);
-            var cache = new Cache().Which().Expires().After(timeout)
+            var absolute = _start + _timeout;
+            
+            var cache = new Cache().Which().Expires().After(_timeout+ _timeout)
                 .OrExpires().At(absolute).WhicheverIsSooner();
-            cache.Set("robble", ms);
+            var ticket = cache.Set("robble", _ms);
+            var expiration = ticket.Expiration;
 
             Assert.AreEqual(1, cache.Count);
-            while (DateTime.UtcNow < absolute)
+            while (DateTime.UtcNow < expiration)
             {
                 Assert.AreEqual(1, cache.Count);
-                Assert.AreEqual(ms, cache.Get("robble", () => 12345));
+                Assert.AreEqual(_ms, cache.Get("robble", () => 12345));
                 Thread.Sleep(5);
             }
 
@@ -53,15 +63,67 @@ namespace Stash.Test.rules
         }
 
         [Test]
+        public void When_AbsoluteExpirationComesSooner_CorrectExpirationIsChosen()
+        {
+            // Should expire after sliding expiration
+            var absolute = _start + _timeout;
+            var cache = new Cache().Which().Expires().After(_timeout+ _timeout)
+                .OrExpires().At(absolute).WhicheverIsSooner();
+            var ticket = cache.Set("robble", _ms);
+
+            Assert.AreEqual(absolute, ticket.Expiration);
+        }
+
+        [Test]
+        public void When_SlidingExpirationComesSooner_CorrectExpirationIsChosen()
+        {
+            // Should expire after absolute expiration
+            
+            var absolute = DateTime.UtcNow+_timeout+_timeout;
+            var cache = new Cache().Which().Expires().After(_timeout)
+                .OrExpires().At(absolute).WhicheverIsSooner();
+
+            var ticket = cache.Set("robble", _ms);
+
+            Assert.AreEqual(ticket.LastAccessed + _timeout, ticket.Expiration);
+        }
+
+        [Test]
+        public void When_AbsoluteExpirationComesLater_CorrectExpirationIsChosen()
+        {
+            // Should expire after sliding expiration
+            var absolute = _start + _timeout + _timeout;
+            var cache = new Cache().Which().Expires().After(_timeout)
+                .OrExpires().At(absolute).WhicheverIsLater();
+            var ticket = cache.Set("robble", _ms);
+
+            Assert.AreEqual(absolute, ticket.Expiration);
+        }
+
+        [Test]
+        public void When_SlidingExpirationComesLater_CorrectExpirationIsChosen()
+        {
+            // Should expire after absolute expiration
+            var absolute = DateTime.UtcNow;
+            var cache = new Cache().Which().Expires().After(_timeout)
+                .OrExpires().At(absolute).WhicheverIsLater();
+            var ticket = cache.Set("robble", _ms);
+
+            Assert.AreEqual(ticket.LastAccessed + _timeout, ticket.Expiration);
+        }
+
+
+        [Test]
         public void When_AbsoluteExpirationComesLater_WhicheverIsLaterEvictsCorrectly()
         {
             // Should expire after absolute expiration
-            var ms = new Random().Next(50, 100);
-            var timeout = TimeSpan.FromMilliseconds(ms);
-            var absolute = DateTime.UtcNow + TimeSpan.FromMilliseconds(ms + 50);
-            var cache = new Cache().Which().Expires().After(timeout)
+            var absolute = _start+_timeout+_timeout;
+            var cache = new Cache().Which().Expires().After(_timeout)
                 .OrExpires().At(absolute).WhicheverIsLater();
-            cache.Set("robble", ms);
+            var ticket = cache.Set("robble", _ms);
+
+
+            Assert.AreEqual(absolute, ticket.Expiration);
             Assert.AreEqual(1, cache.Count);
 
             while (DateTime.UtcNow < absolute)
@@ -98,47 +160,36 @@ namespace Stash.Test.rules
         }
 
         [Test]
-        public void When_LookingAtValue_SlidingExpirationCanPushExpirationDateOut_AndWhicheverIsLaterEvictsCorrectly()
+        public void SlidingExpiration_ExtendsWhenAccessed_AndWhicheverIsLaterEvictsCorrectly()
         {
-            // Should expire after sliding expiration
-            var ms = new Random().Next(25, 50);
-            var startTime = DateTime.UtcNow;
-            var absolute = startTime + TimeSpan.FromMilliseconds(ms);
-            var timeout = TimeSpan.FromMilliseconds(ms + 10);
+            var absolute = _start + _timeout;
             var cache = new Cache().Which().Expires().At(absolute)
-                .OrExpires().After(timeout).WhicheverIsLater();
-            var ticket = cache.Set("robble", ms);
-            var expectedTimeout = ticket.LastAccessedDate + timeout;
-            Assert.AreEqual(1, cache.Count);
-
-            // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
-            while (DateTime.UtcNow <= expectedTimeout)
+                .OrExpires().After(_timeout).WhicheverIsLater();
+            var ticket = cache.Set("robble", _ms);
+            var expiration = ticket.Expiration;
+            while (DateTime.UtcNow <= expiration)
             {
                 Assert.AreEqual(1, cache.Count);
-                Assert.AreEqual(ms, cache.Get("robble", () => 12345));
+                Assert.AreEqual(_ms, cache.Get("robble", () => 12345));
                 Thread.Sleep(5);
             }
 
             Assert.AreEqual(1, cache.Count);
-            Assert.AreEqual(ms, cache.Get("robble", () => 12345));
+            Assert.AreEqual(_ms, cache.Get("robble", () => 12345));
         }
 
         [Test]
         public void When_SlidingExpirationComesFirst_WhicheverIsSoonerEvictsCorrectly()
         {
             // Should expire after sliding expiration
-            var startTime = DateTime.UtcNow;
-            var ms = new Random().Next(25, 50);
-            var timeout = TimeSpan.FromMilliseconds(ms);
-            var absolute = startTime + TimeSpan.FromSeconds(ms + 1);
+            var absolute = _start + _timeout + _timeout;
             var cache = new Cache().Which().Expires().At(absolute)
-                .OrExpires().After(timeout).WhicheverIsSooner();
-            var ticket = cache.Set("robble", ms);
-            var expectedTimeout = ticket.LastAccessedDate + timeout;
-            Assert.AreEqual(1, cache.Count);
-
+                .OrExpires().After(_timeout).WhicheverIsSooner();
+            var ticket = cache.Set("robble", _ms);
+            var expiration = ticket.Expiration;
+            
             // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
-            while (DateTime.UtcNow <= expectedTimeout)
+            while (DateTime.UtcNow <= expiration)
             {
                 Assert.AreEqual(1, cache.Count);
                 Thread.Sleep(5);
@@ -152,18 +203,16 @@ namespace Stash.Test.rules
         public void When_SlidingExpirationComesLater_WhicheverIsLaterEvictsCorrectly()
         {
             // Should expire after sliding expiration
-            var ms = new Random().Next(25, 50);
-            var startTime = DateTime.UtcNow;
-            var absolute = startTime + TimeSpan.FromMilliseconds(ms);
-            var timeout = TimeSpan.FromMilliseconds(ms + 10);
+            
+            var absolute = DateTime.UtcNow;
             var cache = new Cache().Which().Expires().At(absolute)
-                .OrExpires().After(timeout).WhicheverIsLater();
-            var ticket = cache.Set("robble", ms);
-            var expectedTimeout = ticket.LastAccessedDate + timeout;
+                .OrExpires().After(_timeout).WhicheverIsLater();
+            var ticket = cache.Set("robble", _ms);
+            var expiration = ticket.Expiration;
             Assert.AreEqual(1, cache.Count);
 
             // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
-            while (DateTime.UtcNow <= expectedTimeout)
+            while (DateTime.UtcNow <= expiration)
             {
                 Assert.AreEqual(1, cache.Count);
                 Thread.Sleep(5);

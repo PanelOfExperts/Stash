@@ -33,11 +33,10 @@ namespace Stash.Test.rules
             var ms = new Random().Next(50, 250);
             var timeout = TimeSpan.FromMilliseconds(ms);
             var cache = new Cache().Which().Expires().After(timeout);
-            cache.Set("robble", ms);
-            var expiration = DateTime.UtcNow + timeout;
-
+            var ticket = cache.Set("robble", ms);
+            
             // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
-            while (DateTime.UtcNow < expiration)
+            while (DateTime.UtcNow < ticket.Expiration)
             {
                 Assert.AreEqual(1, cache.Count);
                 Thread.Sleep(50);
@@ -57,15 +56,15 @@ namespace Stash.Test.rules
             var ms = new Random().Next(50, 250);
             var timeout = TimeSpan.FromMilliseconds(ms);
             var cache = new Cache().Which().Expires().After(timeout);
-            cache.Set("robble", ms);
-            var expiration = DateTime.UtcNow + timeout;
+            var ticket = cache.Set("robble", ms);
+            var expiration = ticket.Expiration;
 
-            // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
+            // Look at the value, so it resets the Expiration.
             while (DateTime.UtcNow < expiration)
             {
                 Assert.AreEqual(1, cache.Count);
                 Assert.AreEqual(ms, cache.Get("robble", () => 12345));
-                Thread.Sleep(50);
+                Thread.Sleep(5);
             }
             
             Assert.AreEqual(1, cache.Count);

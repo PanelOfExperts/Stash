@@ -35,10 +35,10 @@ namespace Stash.Test.rules
             var ms = new Random().Next(50, 250);
             var expirationDate = DateTime.UtcNow + TimeSpan.FromMilliseconds(ms);
             var cache = new Cache().Which().Expires().At(expirationDate);
-            cache.Set("robble", ms);
+            var ticket = cache.Set("robble", ms);
 
             // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
-            while (DateTime.UtcNow < expirationDate)
+            while (DateTime.UtcNow < ticket.Expiration)
             {
                 Assert.AreEqual(1, cache.Count);
                 Assert.AreEqual(ms, cache.Get("robble", () => 12345));

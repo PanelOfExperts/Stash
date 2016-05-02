@@ -120,6 +120,9 @@
   <data name="EXCEPTION_KeyCannotBeNull" xml:space="preserve">
     <value>Key cannot be null or empty string.</value>
   </data>
+  <data name="EXCEPTION_RulesCannotBeNull" xml:space="preserve">
+    <value>Rules cannot be null.</value>
+  </data>
   <data name="EXCEPTION_StoredValueCannotBeConverted" xml:space="preserve">
     <value>The stored value ({0}) cannot be converted to the expected type ({1}).</value>
     <comment>0 = actual value; 1 = expected type</comment>

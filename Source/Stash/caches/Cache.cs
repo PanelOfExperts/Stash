@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Stash.rules;
 
 namespace Stash.caches
@@ -12,25 +13,30 @@ namespace Stash.caches
         /// <summary>
         ///     Returns a non-expiring cache with no special invalidation/eviction rules.
         /// </summary>
-        public Cache() : this(value => new Ticket {Value = value}, ticket => false)
+        public Cache() : this(ticket => false)
         {
         }
 
         /// <summary>
-        ///     Returns a cache with the given ticket builder and invalidation/eviction rules.
+        ///     Returns a cache with the given invalidation/eviction rules.
         /// </summary>
-        public Cache(Func<object, Ticket> ticketBuilder, Func<Ticket, bool> evictionRule)
+        public Cache(Func<Ticket, bool> evictionRule) : this(evictionRule, new ExpirationRules())
         {
-            TicketBuilder = ticketBuilder;
+        }
+
+        /// <summary>
+        ///     Returns a cache with the given invalidation/eviction rules.
+        /// </summary>
+        internal Cache(Func<Ticket, bool> evictionRule, ExpirationRules rules)
+        {
             ShouldEvict = evictionRule;
-            ExpirationRules = new ExpirationRules();
+            ExpirationRules = rules;
         }
 
         // Internal methods to allow grammar to 
         // pick up the properties and then
         // chain them into new caches.
         internal Func<Ticket, bool> ShouldEvict { get; }
-        internal Func<object, Ticket> TicketBuilder { get; }
         public ExpirationRules ExpirationRules { get; internal set; }
 
         public TValue Get<TValue>(string key, Func<TValue> getter)
@@ -44,18 +50,9 @@ namespace Stash.caches
             return ConvertTo<TValue>(ticket);
         }
 
-        public Ticket Set<TValue>(string key, TValue value)
+        ICacheEntry ICache.Set<TValue>(string key, TValue value)
         {
-            if (string.IsNullOrEmpty(key))
-                throw new ArgumentNullException(nameof(key), Strings.EXCEPTION_KeyCannotBeNull);
-
-            if (_cache.ContainsKey(key))
-            {
-                _cache[key] = TicketBuilder(value);
-                return _cache[key];
-            }
-            _cache.Add(key, TicketBuilder(value));
-            return _cache[key];
+            return Set(key, value);
         }
 
         public void Clear()
@@ -70,6 +67,20 @@ namespace Stash.caches
                 EvictTickets();
                 return _cache.Count;
             }
+        }
+
+        public Ticket Set<TValue>(string key, TValue value)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key), Strings.EXCEPTION_KeyCannotBeNull);
+
+            if (_cache.ContainsKey(key))
+            {
+                _cache[key] = BuildNewTicket(key, value);
+                return _cache[key];
+            }
+            _cache.Add(key, BuildNewTicket(key, value));
+            return _cache[key];
         }
 
         private TValue ConvertTo<TValue>(Ticket ticket)
@@ -98,40 +109,27 @@ namespace Stash.caches
 
         private void EvictTickets()
         {
-            var itemsToRemove = GetEvictionKeys();
-                
+            var itemsToRemove = (from item in _cache where ShouldEvict(item.Value) select item.Key).ToList();
+
             foreach (var key in itemsToRemove)
             {
                 _cache.Remove(key);
             }
         }
 
-        private List<string> GetEvictionKeys()
+        private Ticket BuildNewTicket<TValue>(string key, TValue value)
         {
-            var output = new List<string>();
-            foreach (var item in _cache)
+            return new Ticket(key, ExpirationRules)
             {
-                if (ShouldEvict(item.Value))
-                {
-                    output.Add(item.Key);
-                }
-
-                var now = DateTime.UtcNow;
-                var absolute = ExpirationRules.AbsoluteExpiration;
-
-                Trace.WriteLine($"Absolute: {absolute.Ticks}   Now:{now.Ticks}   ShouldEvict: {now>absolute}");
-
-                //var slidingTime = item.Value.LastAccessedDate + ExpirationRules.SlidingTimeSpan;
-                
-                //Trace.WriteLine($"Sliding: {slidingTime.Ticks}   Now:{now.Ticks}   ShouldEvict: {now>slidingTime}");
-            }
-            return output;
+                Value = value
+            };
         }
-
 
         private Ticket ResetTicket<TValue>(string key, Func<TValue> getter)
         {
-            var ticket = TicketBuilder(getter());
+            Trace.WriteLine(
+                $"Resetting ticket... LastAccessedTime={DateTime.UtcNow.Ticks}");
+            var ticket = BuildNewTicket(key, getter());
             _cache[key] = ticket;
             return ticket;
         }

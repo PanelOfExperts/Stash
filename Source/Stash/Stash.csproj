@@ -21,16 +21,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="caches\Cache.cs" />
-    <Compile Include="caches\ThreadSafeCacheWrapper.cs" />
     <Compile Include="caches\Ticket.cs" />
     <Compile Include="fluent\PartsOfSpeech.cs" />
     <Compile Include="ICache.cs" />
     <Compile Include="caches\NullCache.cs" />
     <Compile Include="fluent\Grammar.cs" />
+    <Compile Include="ICacheEntry.cs" />
     <Compile Include="Properties\InternalsVisibleTo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="rules\CacheSize.cs" />
     <Compile Include="rules\CallbackOnRemoval.cs" />
+    <Compile Include="rules\ExpirationRules.cs" />
     <Compile Include="rules\SingleExpiration.cs" />
     <Compile Include="rules\MixedExpiration.cs" />
     <Compile Include="rules\ThreadSafety.cs" />

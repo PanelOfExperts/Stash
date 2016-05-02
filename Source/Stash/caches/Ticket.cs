@@ -1,34 +1,52 @@
 ﻿using System;
+using Stash.rules;
 
 namespace Stash.caches
 {
-    public class Ticket
+    public class Ticket : ICacheEntry
     {
-        //internal readonly Func<DateTime> Now = () => DateTime.UtcNow;
+        private readonly ExpirationRules _rules;
         private object _value;
 
-        public Ticket()
+        public Ticket(string key, ExpirationRules rules)
         {
-            CreationDate = DateTime.UtcNow;
-            LastAccessedDate = DateTime.UtcNow;
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException(Strings.EXCEPTION_KeyCannotBeNull);
+            if (rules==null)
+                throw new ArgumentException(Strings.EXCEPTION_RulesCannotBeNull);
+
+            Key = key;
+            Created = DateTime.UtcNow;
+            LastAccessed = DateTime.UtcNow;
+            _rules = rules;
         }
+
+        public string Key { get; set; }
+
+        public DateTime Created { get; }
+
+        public DateTime LastAccessed { get; private set; }
+
+        public DateTime Expiration { get; set; }
 
         public object Value
         {
             get
             {
-                LastAccessedDate = DateTime.UtcNow;
+                UpdateExpiration();
                 return _value;
             }
             set
             {
-                LastAccessedDate = DateTime.UtcNow;
+                UpdateExpiration();
                 _value = value;
             }
         }
 
-        public DateTime CreationDate { get; }
-
-        public DateTime LastAccessedDate { get; private set; }
+        private void UpdateExpiration()
+        {
+            LastAccessed = DateTime.UtcNow;
+            Expiration = _rules.GetNewExpiration(LastAccessed);
+        }
     }
 }

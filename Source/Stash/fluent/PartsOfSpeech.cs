@@ -44,15 +44,6 @@
         }
     }
 
-    // With
-    // A preposition "stands before"
-    public class Preposition : PartOfSpeech, IPreposition
-    {
-        public Preposition(ICache cacheToModify) : base(cacheToModify)
-        {
-        }
-    }
-
     // And
     // A conjunction joins words together
     public class Conjunction : PartOfSpeech, IConjunction
@@ -61,4 +52,14 @@
         {
         }
     }
+
+
+    //// With
+    //// A preposition "stands before"
+    //public class Preposition : PartOfSpeech, IPreposition
+    //{
+    //    public Preposition(ICache cacheToModify) : base(cacheToModify)
+    //    {
+    //    }
+    //}
 }

@@ -20,12 +20,10 @@ namespace Stash.rules
         /// </summary>
         public static Cache After(this TransientCache transient, TimeSpan timeSpan)
         {
-            var ticketBuilder = transient.Cache.TicketBuilder;
+            //var ticketBuilder = transient.Cache.TicketBuilder;
             var rules = transient.Cache.ExpirationRules;
-            rules.SlidingTimeSpan = timeSpan;
-            return new Cache(ticketBuilder, ticket =>
-                DateTime.UtcNow > ticket.LastAccessedDate + timeSpan
-                )
+            rules.SlidingExpiration = timeSpan;
+            return new Cache(ticket => DateTime.UtcNow > ticket.Expiration)
             {
                 ExpirationRules = rules
             };
@@ -36,10 +34,9 @@ namespace Stash.rules
         /// </summary>
         public static Cache At(this TransientCache transient, DateTime expirationTime)
         {
-            var ticketBuilder = transient.Cache.TicketBuilder;
             var rules = transient.Cache.ExpirationRules;
             rules.AbsoluteExpiration = expirationTime;
-            return new Cache(ticketBuilder, ticket => DateTime.UtcNow > expirationTime)
+            return new Cache(ticket => DateTime.UtcNow > ticket.Expiration)
             {
                 ExpirationRules = rules
             };

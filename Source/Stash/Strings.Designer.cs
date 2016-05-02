@@ -70,6 +70,15 @@ namespace Stash {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rules cannot be null..
+        /// </summary>
+        internal static string EXCEPTION_RulesCannotBeNull {
+            get {
+                return ResourceManager.GetString("EXCEPTION_RulesCannotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The stored value ({0}) cannot be converted to the expected type ({1})..
         /// </summary>
         internal static string EXCEPTION_StoredValueCannotBeConverted {

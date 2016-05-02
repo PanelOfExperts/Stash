@@ -15,7 +15,6 @@ namespace Stash.Test.caches
         private int _counter;
         private Func<object> _getter;
         private TimeSpan _timeout;
-        private Func<object, Ticket> _ticketBuilder; 
         private Func<Ticket, bool> _evictionRule;
 
         //private readonly TimeSpan _timeout;
@@ -29,12 +28,10 @@ namespace Stash.Test.caches
             _counter = 0;
             _getter = () => ++_counter;
             
-            _ticketBuilder = (value) => new Ticket { Value = value };
-
             _timeout = TimeSpan.FromMilliseconds(250);
-            _evictionRule = (ticket) => DateTime.UtcNow > ticket.CreationDate + _timeout;
+            _evictionRule = (ticket) => DateTime.UtcNow > ticket.Created + _timeout;
 
-            _cache = new Cache(_ticketBuilder, _evictionRule);
+            _cache = new Cache(_evictionRule);
         }
 
         [Test]

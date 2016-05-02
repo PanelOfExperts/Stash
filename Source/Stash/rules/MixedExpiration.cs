@@ -21,10 +21,10 @@ namespace Stash.rules
         /// </summary>
         public static RulesHolder After(this RulesHolder rules, TimeSpan timeSpan)
         {
-            if (rules.SlidingTimeSpan != default(TimeSpan))
+            if (rules.SlidingExpiration != default(TimeSpan))
                 throw new InvalidOperationException("Cannot have two sliding expirations.");
 
-            return new RulesHolder(rules) {SlidingTimeSpan = timeSpan};
+            return new RulesHolder(rules) { SlidingExpiration = timeSpan};
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Stash.rules
         {
             Func<Ticket, bool> evictionRule = ticket =>
             {
-                var sliding = ticket.LastAccessedDate + rules.SlidingTimeSpan;
+                var sliding = ticket.LastAccessed + rules.SlidingExpiration;
                 var absolute = rules.AbsoluteExpiration;
                 var first = sliding < absolute ? sliding : absolute;
 
@@ -51,13 +51,10 @@ namespace Stash.rules
                 return now > first;
             };
 
-            return new Cache(rules.TicketBuilder, evictionRule)
+            return new Cache(evictionRule)
             {
-                ExpirationRules = new ExpirationRules
-                {
-                    AbsoluteExpiration = rules.AbsoluteExpiration,
-                    SlidingTimeSpan = rules.SlidingTimeSpan
-                }
+                ExpirationRules = new ExpirationRules(rules)
+                { Type = ExpirationType.WhicheverIsSoonest }
             };
         }
 
@@ -65,19 +62,15 @@ namespace Stash.rules
         {
             Func<Ticket, bool> evictionRule = ticket =>
             {
-                var sliding = ticket.LastAccessedDate + rules.SlidingTimeSpan;
+                var sliding = ticket.LastAccessed + rules.SlidingExpiration;
                 var absolute = rules.AbsoluteExpiration;
                 var later = sliding > absolute ? sliding : absolute;
                 return DateTime.UtcNow > later;
             };
 
-            return new Cache(rules.TicketBuilder, evictionRule)
+            return new Cache(evictionRule)
             {
-                ExpirationRules = new ExpirationRules
-                {
-                    AbsoluteExpiration = rules.AbsoluteExpiration,
-                    SlidingTimeSpan = rules.SlidingTimeSpan
-                }
+                ExpirationRules = new ExpirationRules(rules) { Type=ExpirationType.WhicheverIsLatest}
             };
         }
 
@@ -85,38 +78,13 @@ namespace Stash.rules
         {
             internal RulesHolder(RulesHolder rules) : base(rules)
             {
-                TicketBuilder = rules.TicketBuilder;
             }
 
             internal RulesHolder(Cache cache) : base(cache)
             {
-                TicketBuilder = cache.TicketBuilder;
             }
-
-            internal Func<object, Ticket> TicketBuilder { get; }
         }
     }
 
-
-    public class ExpirationRules
-    {
-        internal ExpirationRules()
-        {
-        }
-
-        public ExpirationRules(ExpirationRules rules)
-        {
-            AbsoluteExpiration = rules.AbsoluteExpiration;
-            SlidingTimeSpan = rules.SlidingTimeSpan;
-        }
-
-        public ExpirationRules(Cache cache)
-        {
-            AbsoluteExpiration = cache.ExpirationRules.AbsoluteExpiration;
-            SlidingTimeSpan = cache.ExpirationRules.SlidingTimeSpan;
-        }
-
-        public TimeSpan SlidingTimeSpan { get; set; }
-        public DateTime AbsoluteExpiration { get; set; }
-    }
+   
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using Stash.caches;
 using Stash.fluent;
 
 namespace Stash.Test.fluent
@@ -42,7 +41,7 @@ namespace Stash.Test.fluent
                 return _wrappedCache.Get(key, loader);
         }
 
-        public Ticket Set<TValue>(string key, TValue value)
+        public ICacheEntry Set<TValue>(string key, TValue value)
         {
             lock (_lockObject)
                 return _wrappedCache.Set(key, value);
