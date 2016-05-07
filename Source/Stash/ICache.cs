@@ -33,11 +33,12 @@ namespace Stash
         ///         create, cache and return" pattern.
         ///     </para>
         /// </summary>
-        ICacheEntry Set<TValue>(string key, TValue value);
+        void Set<TValue>(string key, TValue value);
 
         /// <summary>
         ///     Removes all keys and values from this cache.
         /// </summary>
         void Clear();
     }
+    
 }

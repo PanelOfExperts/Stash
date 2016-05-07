@@ -41,10 +41,10 @@ namespace Stash.rules
                 return _wrappedCache.Get(key, loader);
         }
 
-        public ICacheEntry Set<TValue>(string key, TValue value)
+        public void Set<TValue>(string key, TValue value)
         {
             lock (_lockObject)
-                return _wrappedCache.Set(key, value);
+                 _wrappedCache.Set(key, value);
         }
 
         public void Clear()

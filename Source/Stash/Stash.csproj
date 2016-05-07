@@ -26,7 +26,6 @@
     <Compile Include="ICache.cs" />
     <Compile Include="caches\NullCache.cs" />
     <Compile Include="fluent\Grammar.cs" />
-    <Compile Include="ICacheEntry.cs" />
     <Compile Include="Properties\InternalsVisibleTo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="rules\CacheSize.cs" />

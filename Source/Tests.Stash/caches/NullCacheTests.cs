@@ -22,14 +22,6 @@ namespace Stash.Test.caches
         }
 
         [Test]
-        public void Put_ThrowsNotImplementedException()
-        {
-            Func<int> getter = null;
-
-            Assert.Throws<NotImplementedException>(() => cache_.Set("key", getter));
-        }
-
-        [Test]
         public void ReturnsGetterResultEachTime()
         {
             var counter = 0;

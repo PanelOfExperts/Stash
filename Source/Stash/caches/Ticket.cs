@@ -3,7 +3,7 @@ using Stash.rules;
 
 namespace Stash.caches
 {
-    public class Ticket : ICacheEntry
+    public class Ticket
     {
         private readonly ExpirationRules _rules;
         private object _value;

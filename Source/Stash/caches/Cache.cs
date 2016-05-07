@@ -37,7 +37,7 @@ namespace Stash.caches
         // pick up the properties and then
         // chain them into new caches.
         internal Func<Ticket, bool> ShouldEvict { get; }
-        public ExpirationRules ExpirationRules { get; internal set; }
+        internal ExpirationRules ExpirationRules { get; set; }
 
         public TValue Get<TValue>(string key, Func<TValue> getter)
         {
@@ -50,9 +50,9 @@ namespace Stash.caches
             return ConvertTo<TValue>(ticket);
         }
 
-        ICacheEntry ICache.Set<TValue>(string key, TValue value)
+        void ICache.Set<TValue>(string key, TValue value)
         {
-            return Set(key, value);
+            Set(key, value);
         }
 
         public void Clear()

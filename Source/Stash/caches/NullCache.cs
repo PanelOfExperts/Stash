@@ -9,9 +9,9 @@ namespace Stash.caches
             return getter();
         }
 
-        public ICacheEntry Set<TValue>(string key, TValue value)
+        public void Set<TValue>(string key, TValue value)
         {
-            throw new NotImplementedException();
+         
         }
 
         public void Clear()
