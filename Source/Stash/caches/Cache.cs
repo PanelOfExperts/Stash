@@ -74,7 +74,7 @@ namespace Stash.caches
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key), Strings.EXCEPTION_KeyCannotBeNull);
 
-            _cache[key] = BuildNewTicket(key, value);
+            _cache[key] = BuildNewTicket(value);
         }
 
         private TValue ConvertTo<TValue>(Ticket ticket)
@@ -111,16 +111,16 @@ namespace Stash.caches
             }
         }
 
-        private Ticket BuildNewTicket<TValue>(string key, TValue value)
+        private Ticket BuildNewTicket<TValue>(TValue value)
         {
-            return new Ticket(key, value);
+            return new Ticket(value);
         }
 
         private Ticket ResetTicket<TValue>(string key, Func<TValue> getter)
         {
             Trace.WriteLine(
                 $"Resetting ticket... LastAccessedTime={DateTime.UtcNow.Ticks}");
-            var ticket = BuildNewTicket(key, getter());
+            var ticket = BuildNewTicket(getter());
             _cache[key] = ticket;
             return ticket;
         }
