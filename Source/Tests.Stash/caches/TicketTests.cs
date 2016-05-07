@@ -13,8 +13,7 @@ namespace Stash.Test.caches
         public void Key_Test()
         {
             var expected = Path.GetRandomFileName();
-            var rules = new ExpirationRules();
-            var ticket = new Ticket(expected, rules);
+            var ticket = new Ticket(expected, null);
 
             Assert.AreEqual(expected, ticket.Key);
         }
@@ -23,17 +22,8 @@ namespace Stash.Test.caches
         public void ConstructorWithNullOrEmptyKey_Throws()
         {
             Ticket ticket = null;
-            var rules = new ExpirationRules();
-            Assert.Throws<ArgumentException>(()=> ticket = new Ticket(null, rules));
-            Assert.Throws<ArgumentException>(() => ticket = new Ticket(string.Empty, rules));
-        }
-        
-        [Test]
-        public void ConstructorWithNullRules_Throws()
-        {
-            Ticket ticket = null;
-            var key = Path.GetRandomFileName();
-            Assert.Throws<ArgumentException>(() => ticket = new Ticket(key, null));
+            Assert.Throws<ArgumentException>(()=> ticket = new Ticket(null, null));
+            Assert.Throws<ArgumentException>(() => ticket = new Ticket(string.Empty, null));
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Stash.rules
             //var ticketBuilder = transient.Cache.TicketBuilder;
             var rules = transient.Cache.ExpirationRules;
             rules.SlidingExpiration = timeSpan;
-            return new Cache(ticket => DateTime.UtcNow > ticket.Expiration)
+            return new Cache(ticket => DateTime.UtcNow > rules.GetNewExpiration(ticket.LastAccessed))
             {
                 ExpirationRules = rules
             };
@@ -36,7 +36,7 @@ namespace Stash.rules
         {
             var rules = transient.Cache.ExpirationRules;
             rules.AbsoluteExpiration = expirationTime;
-            return new Cache(ticket => DateTime.UtcNow > ticket.Expiration)
+            return new Cache(ticket => DateTime.UtcNow > rules.GetNewExpiration(ticket.LastAccessed))
             {
                 ExpirationRules = rules
             };

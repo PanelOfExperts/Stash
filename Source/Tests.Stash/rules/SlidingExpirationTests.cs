@@ -33,14 +33,10 @@ namespace Stash.Test.rules
             var ms = new Random().Next(50, 250);
             var timeout = TimeSpan.FromMilliseconds(ms);
             var cache = new Cache().Which().Expires().After(timeout);
-            var ticket = cache.Set("robble", ms);
-            
-            // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
-            while (DateTime.UtcNow < ticket.Expiration)
-            {
-                Assert.AreEqual(1, cache.Count);
-                Thread.Sleep(50);
-            }
+            cache.Set("robble", ms);
+
+            Assert.AreEqual(1, cache.Count);
+            Thread.Sleep(ms + 10);
             
             Assert.AreEqual(0, cache.Count);
             Assert.AreEqual(12345, cache.Get("robble", () => 12345));
@@ -56,17 +52,14 @@ namespace Stash.Test.rules
             var ms = new Random().Next(50, 250);
             var timeout = TimeSpan.FromMilliseconds(ms);
             var cache = new Cache().Which().Expires().After(timeout);
-            var ticket = cache.Set("robble", ms);
-            var expiration = ticket.Expiration;
+            cache.Set("robble", ms);
 
-            // Look at the value, so it resets the Expiration.
-            while (DateTime.UtcNow < expiration)
-            {
-                Assert.AreEqual(1, cache.Count);
-                Assert.AreEqual(ms, cache.Get("robble", () => 12345));
-                Thread.Sleep(5);
-            }
-            
+            Thread.Sleep(ms - 10);
+            Assert.AreEqual(1, cache.Count);
+            Assert.AreEqual(ms, cache.Get("robble", () => 12345));
+
+            Thread.Sleep(10);
+
             Assert.AreEqual(1, cache.Count);
             Assert.AreEqual(ms, cache.Get("robble", () => 12345));
         }

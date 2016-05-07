@@ -69,18 +69,12 @@ namespace Stash.caches
             }
         }
 
-        public Ticket Set<TValue>(string key, TValue value)
+        public void Set<TValue>(string key, TValue value)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key), Strings.EXCEPTION_KeyCannotBeNull);
 
-            if (_cache.ContainsKey(key))
-            {
-                _cache[key] = BuildNewTicket(key, value);
-                return _cache[key];
-            }
-            _cache.Add(key, BuildNewTicket(key, value));
-            return _cache[key];
+            _cache[key] = BuildNewTicket(key, value);
         }
 
         private TValue ConvertTo<TValue>(Ticket ticket)
@@ -119,10 +113,7 @@ namespace Stash.caches
 
         private Ticket BuildNewTicket<TValue>(string key, TValue value)
         {
-            return new Ticket(key, ExpirationRules)
-            {
-                Value = value
-            };
+            return new Ticket(key, value);
         }
 
         private Ticket ResetTicket<TValue>(string key, Func<TValue> getter)

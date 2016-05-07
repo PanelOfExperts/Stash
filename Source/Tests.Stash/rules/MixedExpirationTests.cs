@@ -47,8 +47,8 @@ namespace Stash.Test.rules
             
             var cache = new Cache().Which().Expires().After(_timeout+ _timeout)
                 .OrExpires().At(absolute).WhicheverIsSooner();
-            var ticket = cache.Set("robble", _ms);
-            var expiration = ticket.Expiration;
+            cache.Set("robble", _ms);
+            var expiration = absolute;
 
             Assert.AreEqual(1, cache.Count);
             while (DateTime.UtcNow < expiration)
@@ -69,24 +69,11 @@ namespace Stash.Test.rules
             var absolute = _start + _timeout;
             var cache = new Cache().Which().Expires().After(_timeout+ _timeout)
                 .OrExpires().At(absolute).WhicheverIsSooner();
-            var ticket = cache.Set("robble", _ms);
+            cache.Set("robble", _ms);
 
-            Assert.AreEqual(absolute, ticket.Expiration);
+            Assert.AreEqual(absolute, cache.ExpirationRules.GetNewExpiration(DateTime.UtcNow));
         }
 
-        [Test]
-        public void When_SlidingExpirationComesSooner_CorrectExpirationIsChosen()
-        {
-            // Should expire after absolute expiration
-            
-            var absolute = DateTime.UtcNow+_timeout+_timeout;
-            var cache = new Cache().Which().Expires().After(_timeout)
-                .OrExpires().At(absolute).WhicheverIsSooner();
-
-            var ticket = cache.Set("robble", _ms);
-
-            Assert.AreEqual(ticket.LastAccessed + _timeout, ticket.Expiration);
-        }
 
         [Test]
         public void When_AbsoluteExpirationComesLater_CorrectExpirationIsChosen()
@@ -95,22 +82,11 @@ namespace Stash.Test.rules
             var absolute = _start + _timeout + _timeout;
             var cache = new Cache().Which().Expires().After(_timeout)
                 .OrExpires().At(absolute).WhicheverIsLater();
-            var ticket = cache.Set("robble", _ms);
+            cache.Set("robble", _ms);
 
-            Assert.AreEqual(absolute, ticket.Expiration);
+            Assert.AreEqual(absolute, cache.ExpirationRules.GetNewExpiration(DateTime.UtcNow));
         }
 
-        [Test]
-        public void When_SlidingExpirationComesLater_CorrectExpirationIsChosen()
-        {
-            // Should expire after absolute expiration
-            var absolute = DateTime.UtcNow;
-            var cache = new Cache().Which().Expires().After(_timeout)
-                .OrExpires().At(absolute).WhicheverIsLater();
-            var ticket = cache.Set("robble", _ms);
-
-            Assert.AreEqual(ticket.LastAccessed + _timeout, ticket.Expiration);
-        }
 
 
         [Test]
@@ -120,10 +96,8 @@ namespace Stash.Test.rules
             var absolute = _start+_timeout+_timeout;
             var cache = new Cache().Which().Expires().After(_timeout)
                 .OrExpires().At(absolute).WhicheverIsLater();
-            var ticket = cache.Set("robble", _ms);
+            cache.Set("robble", _ms);
 
-
-            Assert.AreEqual(absolute, ticket.Expiration);
             Assert.AreEqual(1, cache.Count);
 
             while (DateTime.UtcNow < absolute)
@@ -165,8 +139,8 @@ namespace Stash.Test.rules
             var absolute = _start + _timeout;
             var cache = new Cache().Which().Expires().At(absolute)
                 .OrExpires().After(_timeout).WhicheverIsLater();
-            var ticket = cache.Set("robble", _ms);
-            var expiration = ticket.Expiration;
+            cache.Set("robble", _ms);
+            var expiration = DateTime.UtcNow + _timeout;
             while (DateTime.UtcNow <= expiration)
             {
                 Assert.AreEqual(1, cache.Count);
@@ -185,8 +159,8 @@ namespace Stash.Test.rules
             var absolute = _start + _timeout + _timeout;
             var cache = new Cache().Which().Expires().At(absolute)
                 .OrExpires().After(_timeout).WhicheverIsSooner();
-            var ticket = cache.Set("robble", _ms);
-            var expiration = ticket.Expiration;
+            cache.Set("robble", _ms);
+            var expiration = DateTime.UtcNow + _timeout;
             
             // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
             while (DateTime.UtcNow <= expiration)
@@ -207,8 +181,8 @@ namespace Stash.Test.rules
             var absolute = DateTime.UtcNow;
             var cache = new Cache().Which().Expires().At(absolute)
                 .OrExpires().After(_timeout).WhicheverIsLater();
-            var ticket = cache.Set("robble", _ms);
-            var expiration = ticket.Expiration;
+            cache.Set("robble", _ms);
+            var expiration = DateTime.UtcNow + _timeout;
             Assert.AreEqual(1, cache.Count);
 
             // Don't look at the value, or it'll reset the LastAccessedTime. Ha.
