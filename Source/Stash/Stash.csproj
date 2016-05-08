@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="caches\Cache.cs" />
+    <Compile Include="caches\CacheBuilder.cs" />
     <Compile Include="caches\Ticket.cs" />
     <Compile Include="fluent\PartsOfSpeech.cs" />
     <Compile Include="ICache.cs" />
